@@ -7,10 +7,7 @@
 substrate-api-client a library written in Rust for connecting to the substrate's RPC interface via WebSockets allowing to
 
 * Compose extrinsics, send them and subscribe to updates (synchronously).
-* supports composing extrinsics for `no_std` builds
 * Watch events and execute code upon events.
-* Parse and print the node metadata.
-* currently only supports [node-template](https://github.com/substrate-developer-hub/substrate-node-template) based chains (doesn't support the Account type of Polkadot/Kusama without patches)
 
 ## Prerequisites
 
@@ -41,7 +38,6 @@ The following examples can be found in the [examples](/src/examples) folder:
 
 * [example_event_callback](/src/examples/example_event_callback.rs): Subscribe and react on events.
 * [example_generic_extrinsic](/src/examples/example_generic_extrinsic.rs): Compose an extrinsic for any call in any module by supplying the module and call name as strings.
-* [example_get_storage](/src/examples/example_get_storage.rs): Read storage values.
 
 
 
