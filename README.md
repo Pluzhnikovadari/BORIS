@@ -2,7 +2,7 @@
 
 ## Description
 This project emplement interaction between two Quagga nodes with using blockchain.
-Before interaction you shoud disable route acceptance between nodes but make their interaction enabled.
+Before interaction you shoud disable route acceptance between nodes but make their interaction enabled and build route map by yourself.
 
 ## Build and Run project
 To build this project you shoud follow this steps:
