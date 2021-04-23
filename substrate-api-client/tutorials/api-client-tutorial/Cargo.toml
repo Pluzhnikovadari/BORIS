@@ -1,0 +1,19 @@
+[package]
+name = "api-client-tutorial"
+version = "0.1.0"
+authors = ["Supercomputing Systems AG <info@scs.ch>"]
+edition = "2018"
+
+[dependencies]
+substrate-api-client = { path = "../.." }
+codec = { package = "parity-scale-codec", features = ["derive"], version = "1.3.1", default-features = false }
+
+[dependencies.sp-core]
+git = "https://github.com/paritytech/substrate.git"
+rev = "a208da16"
+version = '2.0.0'
+
+[dependencies.keyring]
+git = "https://github.com/paritytech/substrate.git"
+rev = "a208da16"
+package = "sp-keyring"
