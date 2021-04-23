@@ -1,4 +1,4 @@
-### Substrate
+# Substrate
 
 ## Description
 This project emplement interaction between two Quagga nodes with using blockchain.
