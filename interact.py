@@ -36,32 +36,45 @@ def bob_func():
                to_string(our_way[1].split(' ')[-1][:-1])]
     run_command(cmd, "print")
     event_get = open("substrate-api-client/events.txt", "r")
-    ev = ''
+    address = ''
     cnt = 0
     while True:
         # работа с событиями и добавление пути в quagga.
-        ev = ev + event_get.readline()
-        if ev and ev[-1] == '\n':
-            print(datetime.now())
-            ev = ev.split(", ")[-1][:-2]
+        address = address + event_get.readline()
+        if address and address[-1] == '\n':
+            address = address.split(", ")[-1][:-2]
+            ev = address[:address.find('0000')]
+        	neighbour = address[address.find('0000') + 4:]
             with open('/etc/quagga/bgpd.conf', "r+") as f:
                 line = f.readlines()
                 add = str(int(ev[1:4])) + "." + str(int(ev[4:7])) + \
                     "." + str(int(ev[7:10])) + "." + \
                     str(int(ev[10:13])) + '/' + str(int(ev[13:]))
+                neighbour_ip = str(int(neighbour[1:4])) + "." + str(int(neighbour[4:7])) + \
+                    "." + str(int(neighbour[7:10])) + "." + \
+                    str(int(neighbour[10:13]))
+                for elem in line:
+                	if "neighbor " + neighbour_ip + " route-map" in line:
+                		map_neigh = elem.split(" ")[-2]
+                		map_neigh = map_neigh.split("-")[-1]
+                		break
+                count = 0
+                for elem in line:
+                	if ' ip prefix-list PREFIX-LIST-FROM-' + \
+                            map_neigh + 'seq' in elem:
+                            count += 1
                 for i in range(len(line)):
                     """ ip prefix-list PREFIX-LIST-FROM-BGP1
                     seq 2 permit 169.254.253.0/24."""
-                    if ('route-map MAP-FROM-BGP1 permit' in line[i]):
-                        line = line[:i] + [' ip prefix-list \
-                            PREFIX-LIST-FROM-BGP1 seq \
-                            1 permit ' + add + '\n'] + ['!\n'] + line[i:]
+                    if ('route-map ' + map_neigh + ' permit' in line[i]):
+                        line = line[:i] + [' ip prefix-list PREFIX-LIST-FROM-' + \
+                            map_neigh + 'seq ' + \
+                            str(count) + ' permit ' + add + '\n'] + ['!\n'] + line[i:]
                         break
                 with open('/etc/quagga/bgpd.conf', "w") as f:
                     for el in line:
                         f.write(el)
             ev = ''
-            #print(2, datetime.now())
 
 
 def alice_func():
@@ -79,20 +92,26 @@ def alice_func():
 
         with open('bgptable_updates.txt', 'r') as update:
             with open('bgptable.txt', 'r') as table:
-                tablefile = table.readlines()[6:-2]
+                tablefile = table.readlines()
                 updatefile = update.readlines()[6:-2]
 
+                router_ip = 0
+
+                for el in tablefile:
+            		if "bgp router-id" in el:
+            			router_ip = to_string(' '.split(el)[-1])
+
+
+            	tablefile = tablefile[6:-2]
                 t = set(tablefile)
                 u = set(updatefile)
                 t.difference_update(u)
                 for elem in t:
                     ip_path = elem.split()[1]
-                    ip_path = to_string(ip_path)
-                    print(datetime.now())
+                    ip_path = to_string(ip_path) + '0000' + router_ip
                     with open('substrate-api-client_1/data.txt',
                               'w') as send_data_write:
                         send_data_write.write(ip_path)
-                    print(datetime.now())
                     cmd = "cd substrate-api-client_1/ && \
                     ./target/release/examples/example_generic_extrinsic"
                     run_command(cmd, "print")
