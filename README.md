@@ -50,7 +50,7 @@ sudo python3 interact.py alice
 ```
 For the second node:
 ```shell
-sudo python3 interact.py alice
+sudo python3 interact.py bob
 ```
 
 ## Result
