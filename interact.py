@@ -25,16 +25,6 @@ def to_string(ip_path):
 
 
 def bob_func():
-
-    with open('our_ip.txt', 'w'):
-        pass
-    cmd = "sudo cat /etc/quagga/bgpd.conf >> our_ip.txt"
-    with open('our_ip.txt', 'r') as our_ip:
-        run_command(cmd, "print")
-        our_way = our_ip.readlines()[4:6]
-    our_way = [our_way[0].split(' ')[-1][:-1],
-               to_string(our_way[1].split(' ')[-1][:-1])]
-    run_command(cmd, "print")
     event_get = open("substrate-api-client/events.txt", "r")
     address = ''
     cnt = 0
@@ -43,38 +33,40 @@ def bob_func():
         address = address + event_get.readline()
         if address and address[-1] == '\n':
             address = address.split(", ")[-1][:-2]
-            ev = address[:address.find('0000')]
-        	neighbour = address[address.find('0000') + 4:]
             with open('/etc/quagga/bgpd.conf', "r+") as f:
                 line = f.readlines()
-                add = str(int(ev[1:4])) + "." + str(int(ev[4:7])) + \
-                    "." + str(int(ev[7:10])) + "." + \
-                    str(int(ev[10:13])) + '/' + str(int(ev[13:]))
-                neighbour_ip = str(int(neighbour[1:4])) + "." + str(int(neighbour[4:7])) + \
-                    "." + str(int(neighbour[7:10])) + "." + \
-                    str(int(neighbour[10:13]))
-                for elem in line:
-                	if "neighbor " + neighbour_ip + " route-map" in line:
-                		map_neigh = elem.split(" ")[-2]
-                		map_neigh = map_neigh.split("-")[-1]
-                		break
-                count = 0
-                for elem in line:
-                	if ' ip prefix-list PREFIX-LIST-FROM-' + \
-                            map_neigh + 'seq' in elem:
-                            count += 1
-                for i in range(len(line)):
-                    """ ip prefix-list PREFIX-LIST-FROM-BGP1
-                    seq 2 permit 169.254.253.0/24."""
-                    if ('route-map ' + map_neigh + ' permit' in line[i]):
-                        line = line[:i] + [' ip prefix-list PREFIX-LIST-FROM-' + \
-                            map_neigh + 'seq ' + \
-                            str(count) + ' permit ' + add + '\n'] + ['!\n'] + line[i:]
-                        break
-                with open('/etc/quagga/bgpd.conf', "w") as f:
-                    for el in line:
-                        f.write(el)
-            ev = ''
+            add = str(int(address[13:16])) + "." + str(int(address[16:19])) + \
+                "." + str(int(address[19:22])) + "." + \
+                str(int(address[22:25])) + '/' + str(int(address[25:]))
+            neighbour_ip = str(int(address[1:4])) + "." + str(int(address[4:7])) + \
+                "." + str(int(address[7:10])) + "." + \
+                str(int(address[10:13]))
+            map_neigh = ""
+            for elem in line:
+                if "neighbor " + neighbour_ip + " route-map" in elem:
+                    map_neigh = elem.split(" ")[-2]
+                    map_neigh = map_neigh.split("-")[-1]
+                    break
+            count = 0
+            for elem in line:
+                if 'ip prefix-list PREFIX-LIST-FROM-' + \
+                        map_neigh + ' seq' in elem:
+                        count += 1
+            for i in range(len(line)):
+                if ("route-map MAP-FROM"  in line[i] and 'permit' in line[i]):
+                    if "!" in line[i - 1]:
+                        print("in this 1")
+                        line = line[:i - 1] + [' ip prefix-list PREFIX-LIST-FROM-' + \
+                            map_neigh + ' seq ' + \
+                            str(count + 1) + ' permit ' + add + '\n'] + line[i - 1:]
+                    else:
+                        line = line[:i] + ['!\n ip prefix-list PREFIX-LIST-FROM-' + \
+                            map_neigh + ' seq ' + \
+                            str(count + 1) + ' permit ' + add + '\n!\n'] + line[i:]
+                    break
+            with open('/etc/quagga/bgpd.conf', "w+") as f:
+                for el in line:
+                    f.write(el)
 
 
 def alice_func():
