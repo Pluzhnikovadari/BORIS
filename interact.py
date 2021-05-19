@@ -100,6 +100,7 @@ def alice_func():
                 for el in tablefile:
             		if "bgp router-id" in el:
             			router_ip = to_string(' '.split(el)[-1])
+                        break
 
 
             	tablefile = tablefile[6:-2]
@@ -108,7 +109,7 @@ def alice_func():
                 t.difference_update(u)
                 for elem in t:
                     ip_path = elem.split()[1]
-                    ip_path = to_string(ip_path) + '0000' + router_ip
+                    ip_path = router_ip + to_string(ip_path)
                     with open('substrate-api-client_1/data.txt',
                               'w') as send_data_write:
                         send_data_write.write(ip_path)
