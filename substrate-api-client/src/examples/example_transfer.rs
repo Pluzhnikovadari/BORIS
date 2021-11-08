@@ -9,7 +9,6 @@ fn main() {
     env_logger::init();
     let url = get_node_url_from_cli();
 
-    // initialize api and set the signer (sender) that is used to sign the extrinsics
     let from = AccountKeyring::Alice.pair();
     let api = Api::new(url)
         .map(|api| api.set_signer(from.clone()))
@@ -23,8 +22,6 @@ fn main() {
     }
 
     
-    // generate extrinsic
-    //let xt = api.balance_transfer(MultiAddress::Id(to.clone()), 42);
     let xt = api.balance_set_balance(
         MultiAddress::Id(fr.clone()),
         42,
@@ -33,13 +30,11 @@ fn main() {
 
     println!("[+] Composed extrinsic: {:?}\n", xt);
 
-    // send and watch extrinsic until finalized
     let tx_hash = api
         .send_extrinsic(xt.hex_encode(), XtStatus::InBlock)
         .unwrap();
     println!("[+] Transaction got included. Hash: {:?}\n", tx_hash);
     
-    // verify that Bob's free Balance increased
     let alice = api.get_account_data(&fr).unwrap().unwrap();
     println!("[+] Alice's Free Balance is now {}\n", alice.free);
     
