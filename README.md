@@ -42,14 +42,6 @@ cargo +nightly-2020-10-01 run --example example_event_callback
 ```
 
 3) The last step is to run interraction script from main Substrate folder
-For the first node:
-```shell
-sudo python3 interact.py alice
-```
-For the second node:
-```shell
-sudo python3 interact.py bob
-```
 
 ## Result
 Now you can add new paths in your Quagga and the interaction between your two nodes will take place via blockchain!
