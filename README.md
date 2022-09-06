@@ -7,7 +7,7 @@ Before interaction you shoud disable route acceptance between nodes but make the
 ## Build and Run project
 To build this project you shoud follow this steps:
 1) Setting up your nodes in "substrate-node" folder
-Following the instructions in substrate-node's README build your project and run this command:
+Run this command:
 For the first node:
 ```shell
 ./target/release/node-template \
@@ -34,8 +34,6 @@ For the second node:
    --rpc-methods Unsafe \
    --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/12D3KooWEyoppNCUx8Yx66oV9fJnriXwCcXwDDUA2kj6vnc6iDEp
 ```
-
-And then set up your keys sa in [tutorial](https://substrate.dev/docs/en/tutorials/start-a-private-network/customchain)
 
 2) Then set up api-client module in "substrate-api-client" folder. 
 Here you need to interact only thith second node and run event-listener module using this command
